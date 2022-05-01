@@ -1,87 +1,86 @@
-interface Veiculo {
-    nome: string;
-    placa: string;
-    entrada: Date | string;
+interface Vehicle {
+    name: string,
+    plate: string,
+    prohibited: Date | string
 }
 
+(function(){
+    const $ = (query: string): HTMLInputElement | null =>
+        document.querySelector(query)
 
-(function () {
-    const $ = (query: string): HTMLInputElement | null => document.querySelector(query);
+        function calculateTime(milliseconds: number){
+            const minutes = Math.floor(milliseconds / 60000)
+            const seconds = Math.floor((milliseconds % 60000) / 1000)
 
-    function calcTempo(mil: number){
-        const min = Math.floor(mil/ 60000);
-        const sec = Math.floor((mil % 60000) / 1000)
-
-        return `${min}m e ${sec}s`;
-    }
-
-    function patio() {
-        function ler(): Veiculo[] {
-            return localStorage.patio ? JSON.parse(localStorage.patio) : [];
+            return `${minutes}m e ${seconds}s`
         }
 
-        function salvar(veiculos: Veiculo[]) { 
-            localStorage.setItem("patio", JSON.stringify(veiculos))
-        }
-
-        function adicionar(veiculo: Veiculo, salva?: boolean) {
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-            <td>${veiculo.nome}</td>
-            <td>${veiculo.placa}</td>
-            <td>${veiculo.entrada}</td>
-            <td>
-            <button class="delete" data-placa="${veiculo.placa}">X</button>
-            </td>
-            `;
-
-            row.querySelector(".delete")?.addEventListener("click", function(){
-              remover(this.dataset.placa)  
-            });
-
-           $("#patio")?.appendChild(row);
-
-           if (salva) salvar([...ler(), veiculo]);
-        }
-
-        function remover(placa: string) { 
-
-            const { entrada, nome } = ler().find(
-                (veiculo) => veiculo.placa === placa);
-
-            const tempo = calcTempo(new Date().getTime() - new Date(entrada).getTime());
-
-            if(!confirm(`O veiculo ${nome} permaneceu por ${tempo}. Deseja encerrar?`)
-            ) 
-            return;
-
-            salvar(ler().filter((veiculo) => veiculo.placa !== placa));
-            render();
-        }
-
-        function render() {
-            $("#patio")!.innerHTML = "";
-            const patio = ler();
-
-            if(patio.length) {
-                patio.forEach((veiculo) => adicionar(veiculo));          
+        function parking(){
+            
+            function read(): Vehicle[]{
+                return localStorage.parking ? JSON.parse(localStorage.parking) : []
             }
+
+            function toSave(vehicle: Vehicle[]){
+                localStorage.setItem("parking", JSON.stringify(vehicle))
+            }
+
+            function add(vehicle:Vehicle, save?: boolean){
+                const row = document.createElement("tr")
+
+                row.innerHTML = `
+                <td>${vehicle.name}</td>
+                <td>${vehicle.plate}</td>
+                <td>${vehicle.prohibited}</td>
+                <td>
+                    <button class="delete" data-plate="${vehicle.plate}"> Retirar </button>
+                </td>
+                `
+
+                row.querySelector(".delete")?.addEventListener("click", function(){
+                    remove(this.dataset.plate)
+                })
+
+                $("#parking")?.appendChild(row)
+
+                if(save) toSave([...read(), vehicle])
+            }
+
+            function remove(plate: string){
+                const { prohibited, name } = read().find(
+                    (vehicle) => vehicle.plate === plate)
+
+                const time = calculateTime(new Date().getTime() - new Date(prohibited).getTime())
+
+                if(!confirm(`O veículo ${name} permaneceu por ${time}. Deseja encerrar?`)) return
+
+                toSave(read().filter((vehicle) => vehicle.plate !== plate))
+                render()
+            }            
+
+            function render(){
+                $("#parking")!.innerHTML = ""
+                const parking = read()
+
+                if(parking.length){
+                    parking.forEach((vehicle) => add(vehicle))
+                }
+            }
+
+            return { read, add, remove, toSave, render}
         }
 
-        return { ler, adicionar, remover, salvar, render }
-    }
+        parking().render()
 
-    patio().render();
-    $("#cadastrar")?.addEventListener("click", () => {
-        const nome = $("#nome")?.value;
-        const placa = $("#placa")?.value;
+    $("#register")?.addEventListener("click", () => {
+        const name = $("#name")?.value
+        const plate = $("#plate")?.value
 
-        if (!nome || !placa) {
-            alert("Os campos nome e placa são obrigatórios");
-            return;
+        if(!name || !plate){
+            alert("Os campos nome e placa são obrigatórios")
+            return
         }
 
-        patio().adicionar({ nome, placa, entrada: new Date().toISOString() }, true);
-    });
-})();
+        parking().add({ name, plate, prohibited: new Date().toISOString()}, true)
+    })
+})()

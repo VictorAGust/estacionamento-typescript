@@ -1,29 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Estacionamento</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Estacionamento</title>
 </head>
+<body class="flex justify-items-stretch bg-gray-100 m-16" >    
 
-<body>
-	<input type="text" id="nome" placeholder="Digite o nome do veiculo: " autocomplete="off" />
-	<input type="text" id="placa" placeholder="Digite a placa do veiculo: " autocomplete="off" />
-	<button id="cadastrar">Cadastrar</button>
+    <div class="flex flex-col items-stretch m-auto max-w-lg">
 
-	<table>
-		<thead>
-			<tr>
-				<th>Nome</th>
-				<th>Placa</th>
-				<th>Entrada</th>
-				<th>Ações</th>
-			</tr>
-		</thead>
-		<tbody id="patio"></tbody>
-	</table>
-	<script src="./script.js"></script>
+        <h1 class="m-4 text-indigo-900 text-6xl text-center">Estacionamento</h1>
+
+        <input
+            type="text"
+            id="name"
+            placeholder="Digite o nome do veículo"
+            autocomplete="off"
+            class="rounded m-4 px-2 py-2 text-xl"
+        >
+        <input
+            type="text"
+            id="plate"
+            placeholder="Digite a placa do veículo"
+            autocomplete="off"
+            class="rounded m-4 px-2 py-2 text-xl"
+        >
+        <button
+            id="register"
+            class="rounded bg-indigo-500 m-4 px-1 py-2 text-2xl text-white hover:bg-indigo-900 "
+        >Cadastrar        
+        </button>
+    
+        <table class="table-fixed m-4">
+            <thead class="bg-gray-500 text-white m-4 px-2 py-1">
+                <tr class="">
+                    <th class="px-2 py-1 text-left">Nome</th>
+                    <th class="p-4 text-left">Placa</th>
+                    <th class="p-4 text-left">Entrada</th>
+                    <th class="p-4 text-left">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="px-2 py-1" id="parking"></tbody>
+        </table>
+
+    </div>
+    <script src="./script.js"></script>
 </body>
-
 </html>

@@ -1,62 +1,62 @@
 (function () {
     var _a;
     const $ = (query) => document.querySelector(query);
-    function calcTempo(mil) {
-        const min = Math.floor(mil / 60000);
-        const sec = Math.floor((mil % 60000) / 1000);
-        return `${min}m e ${sec}s`;
+    function calculateTime(milliseconds) {
+        const minutes = Math.floor(milliseconds / 60000);
+        const seconds = Math.floor((milliseconds % 60000) / 1000);
+        return `${minutes}m e ${seconds}s`;
     }
-    function patio() {
-        function ler() {
-            return localStorage.patio ? JSON.parse(localStorage.patio) : [];
+    function parking() {
+        function read() {
+            return localStorage.parking ? JSON.parse(localStorage.parking) : [];
         }
-        function salvar(veiculos) {
-            localStorage.setItem("patio", JSON.stringify(veiculos));
+        function toSave(vehicle) {
+            localStorage.setItem("parking", JSON.stringify(vehicle));
         }
-        function adicionar(veiculo, salva) {
+        function add(vehicle, save) {
             var _a, _b;
             const row = document.createElement("tr");
             row.innerHTML = `
-            <td>${veiculo.nome}</td>
-            <td>${veiculo.placa}</td>
-            <td>${veiculo.entrada}</td>
-            <td>
-            <button class="delete" data-placa="${veiculo.placa}">X</button>
-            </td>
-            `;
+                <td>${vehicle.name}</td>
+                <td>${vehicle.plate}</td>
+                <td>${vehicle.prohibited}</td>
+                <td>
+                    <button class="delete" data-plate="${vehicle.plate}"> Retirar </button>
+                </td>
+                `;
             (_a = row.querySelector(".delete")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", function () {
-                remover(this.dataset.placa);
+                remove(this.dataset.plate);
             });
-            (_b = $("#patio")) === null || _b === void 0 ? void 0 : _b.appendChild(row);
-            if (salva)
-                salvar([...ler(), veiculo]);
+            (_b = $("#parking")) === null || _b === void 0 ? void 0 : _b.appendChild(row);
+            if (save)
+                toSave([...read(), vehicle]);
         }
-        function remover(placa) {
-            const { entrada, nome } = ler().find((veiculo) => veiculo.placa === placa);
-            const tempo = calcTempo(new Date().getTime() - new Date(entrada).getTime());
-            if (!confirm(`O veiculo ${nome} permaneceu por ${tempo}. Deseja encerrar?`))
+        function remove(plate) {
+            const { prohibited, name } = read().find((vehicle) => vehicle.plate === plate);
+            const time = calculateTime(new Date().getTime() - new Date(prohibited).getTime());
+            if (!confirm(`O veículo ${name} permaneceu por ${time}. Deseja encerrar?`))
                 return;
-            salvar(ler().filter((veiculo) => veiculo.placa !== placa));
+            toSave(read().filter((vehicle) => vehicle.plate !== plate));
             render();
         }
         function render() {
-            $("#patio").innerHTML = "";
-            const patio = ler();
-            if (patio.length) {
-                patio.forEach((veiculo) => adicionar(veiculo));
+            $("#parking").innerHTML = "";
+            const parking = read();
+            if (parking.length) {
+                parking.forEach((vehicle) => add(vehicle));
             }
         }
-        return { ler, adicionar, remover, salvar, render };
+        return { read, add, remove, toSave, render };
     }
-    patio().render();
-    (_a = $("#cadastrar")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
+    parking().render();
+    (_a = $("#register")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
         var _a, _b;
-        const nome = (_a = $("#nome")) === null || _a === void 0 ? void 0 : _a.value;
-        const placa = (_b = $("#placa")) === null || _b === void 0 ? void 0 : _b.value;
-        if (!nome || !placa) {
+        const name = (_a = $("#name")) === null || _a === void 0 ? void 0 : _a.value;
+        const plate = (_b = $("#plate")) === null || _b === void 0 ? void 0 : _b.value;
+        if (!name || !plate) {
             alert("Os campos nome e placa são obrigatórios");
             return;
         }
-        patio().adicionar({ nome, placa, entrada: new Date().toISOString() }, true);
+        parking().add({ name, plate, prohibited: new Date().toISOString() }, true);
     });
 })();
